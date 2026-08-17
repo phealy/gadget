@@ -26,6 +26,15 @@ Activate the environment:
 .venv\Scripts\Activate.ps1
 ```
 
-## Visual Studio Code Extension
+## Visual Studio Code Extensions
 
-Download and install the latest [LEGO SPIKE Prime/MINDSTORMS VS Code extension](https://github.com/phealy/lego-spikeprime-mindstorms-vscode/releases/latest/).
+Download and install the following VS Code extensions.
+
+From the extension marketplace:
+
+- [Python](https://marketplace.visualstudio.com/items?itemName=ms-python.python)
+- [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance)
+
+Manually, as a VS Code VSIX file:
+
+- [LEGO SPIKE Prime/MINDSTORMS](https://github.com/phealy/lego-spikeprime-mindstorms-vscode/releases/latest/)
