@@ -126,7 +126,7 @@ async def gyro_move(distance: float = 0,                          # Drive distan
                       f'| Velocity {velocity:>4}',
                       f'| Accel {acceleration:>4}',
                       f'| Yaw {round(yaw_angle(), 1):>6}',
-                      f'| ΔYaw {round(angle_difference(angle), 1):>5}',
+                      f'| ΔYaw {round(angle_difference(angle), 1):>6}',
                       f'| Driven {round(avg_relative_drive_distance_cm(), 1):>6}',
                       f'| ΔDegrees {remaining_degrees_drive():>5}')
 
