@@ -89,7 +89,7 @@ def angle_difference(angle: float) -> float:
 def steering(angle: float) -> int:
     # Steering is based on how far off we are from the correct angle but adjusted to be no more than 100.
     # STEERING_CORRECTION makes us move back to center more quickly
-    return int(max(-100, min(100, angle_difference(angle) * STEERING_CORRECTION)))
+    return int(max(-50, min(50, angle_difference(angle) * STEERING_CORRECTION)))
 
 def log(message: str):
     print(f'{(ticks_ms() - START_TIME) / 1000.0:06.3f}s | {message}')
