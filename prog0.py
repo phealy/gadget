@@ -5,12 +5,10 @@ from hub import port
 import runloop
 
 async def main():
-    await setup(wheel_diameter="small", turning_multiplier=1.432, left_motor=port.A, right_motor=port.B)
-    #await gyro_move(distance=20, description="Model 1")
-    await gyro_move(angle=-90)
-    await gyro_move(angle=180)
-    await gyro_move(angle=90)
-    await gyro_move(angle=0)
+    await setup(wheel_diameter="small", turn_factor=1.447, left_motor=port.A, right_motor=port.B)
+    await gyro_move(distance=100, angle=0, drive_velocity=800, description='drive to leaf cutter')
+    await gyro_move(distance=-100, angle=0, drive_velocity=800, description='push leaf cutter')
+    #await gyro_move(distance=20, drive_velocity=100)
     await print_timer()
 
 runloop.run(main())

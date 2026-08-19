@@ -4,40 +4,29 @@ from time import ticks_ms
 import motor_pair as mp, motor as m
 import runloop
 
-# Control parameters
-DEFAULT_DRIVE_VELOCITY = 800
-DEFAULT_TURN_VELOCITY = 800
-DEFAULT_ACCELERATION = 1000
-DEFAULT_DECELERATION = 1000
-DEFAULT_STOP_TYPE = m.SMART_BRAKE   # Default stop type
-STEERING_CORRECTION = 1             # How aggressively to correct steering while in gyro_drive()
-DRIVE_MOTORS = (p.B, p.A)           # Left motor first, then right motor second.
-DRIVE_PAIR = mp.PAIR_1              # Pair to use for driving
-DEGREES_PER_CM = 360 / (5.6 * pi)   # Small wheels
-# DEGREES_PER_CM = 360 / (8.8 * pi)  # Large wheels
-TURNING_MULTIPLIER = 1.432          # Multiplier between degrees to turn and motor rotation
 START_TIME = ticks_ms()
 
-# TURNING_MULTIPLIER is calculated by finding the diameter of the turning circle (center to center of the
+# TURN_FACTOR is calculated by finding the diameter of the turning circle (center to center of the
 # wheels, measured horizontally) and dividing it by the diameter of the wheel. It should be experimentally
 # tweaked for each robot.
 
 async def setup(
     default_drive_velocity: int = 600,
     default_turn_velocity: int = 600,
-    default_acceleration: int = 800,
-    default_deceleration: int = 800,
+    default_acceleration: int = 1000,
+    default_deceleration: int = 1000,
     default_stop_type: m.StopType = m.SMART_BRAKE,      # Default stop type
-    steering_correction: float = 5,                     # How aggressively to correct steering while in gyro_drive()
+    steering_correction: float = 1,                     # How aggressively to correct steering while in gyro_drive()
     left_motor: m.Motor = p.B,                          # Left motor for driving
     right_motor: m.Motor = p.A,                         # Right motor for driving
     drive_pair: mp.MotorPair = mp.PAIR_1,               # Pair to use for driving
     wheel_diameter: any = "small",                      # "small" or "large" wheels or a custom diameter in cm
-    turning_multiplier: float = 1.432,                  # Multiplier between degrees to turn and motor rotation
-):
+    turn_factor: float = 1.432,                         # Multiplier between degrees to turn and motor rotation
+    ):
+    
     global DEFAULT_DRIVE_VELOCITY, DEFAULT_TURN_VELOCITY, DEFAULT_ACCELERATION
     global DEFAULT_DECELERATION, DEFAULT_STOP_TYPE, STEERING_CORRECTION
-    global DRIVE_MOTORS, DRIVE_PAIR, DEGREES_PER_CM, TURNING_MULTIPLIER
+    global DRIVE_MOTORS, DRIVE_PAIR, DEGREES_PER_CM, TURN_FACTOR
 
     await runloop.until(ms.stable)
     DEFAULT_DRIVE_VELOCITY = default_drive_velocity
@@ -54,7 +43,7 @@ async def setup(
         DEGREES_PER_CM = 360 / (8.8 * pi)
     else:
         DEGREES_PER_CM = 360 / (wheel_diameter * pi)
-    TURNING_MULTIPLIER = turning_multiplier
+    TURN_FACTOR = turn_factor
 
     mp.pair(DRIVE_PAIR, DRIVE_MOTORS[0], DRIVE_MOTORS[1])
     ms.set_yaw_face(ms.TOP)
@@ -103,6 +92,11 @@ async def gyro_move(distance: float = 0,                          # Drive distan
                     deceleration: int = None,                     # Deceleration (0 to 10000 in deg/sec^2)
                     description: str = "none"):                   # Description of task for log output
 
+    try:
+        DRIVE_PAIR
+    except NameError:
+        raise SystemExit("setup() must be called before calling gyro_move()")
+
     angle = yaw_angle() if angle is None else angle
     drive_velocity = DEFAULT_DRIVE_VELOCITY if drive_velocity is None else drive_velocity
     turn_velocity = DEFAULT_TURN_VELOCITY if turn_velocity is None else turn_velocity
@@ -110,11 +104,11 @@ async def gyro_move(distance: float = 0,                          # Drive distan
     deceleration = DEFAULT_DECELERATION if deceleration is None else deceleration
 
     # Check parameters
-    assert drive_velocity >= 0 and drive_velocity <= 1050, "drive velocity must be between 0 and 1050"
-    assert turn_velocity >= 0 and turn_velocity <= 1050, "drive velocity must be between 0 and 1050"
-    assert acceleration >= 0 and acceleration <= 10000, "acceleration must be between 0 and 10000"
-    assert deceleration >= 0 and deceleration <= 10000, "deceleration must be between 0 and 10000"
-    assert angle >= -179.9 and angle <= 180, "angle must be between -179.9 and 180 degrees"
+    assert drive_velocity >= 100 and drive_velocity <= 1050, "drive velocity must be between 100 and 1050"
+    assert turn_velocity >= 100 and turn_velocity <= 1050, "turn velocity must be between 100 and 1050"
+    assert acceleration >= 100 and acceleration <= 10000, "acceleration must be between 100 and 10000"
+    assert deceleration >= 100 and deceleration <= 10000, "deceleration must be between 100 and 10000"
+    assert angle >= -180 and angle <= 180, "angle must be between -180 and 180 degrees"
 
     # Internal functions
     async def print_status(status: str):
@@ -143,15 +137,18 @@ async def gyro_move(distance: float = 0,                          # Drive distan
     await print_status("start")
 
     # Do a gyro tank turn
-    await mp.move_for_degrees(DRIVE_PAIR, int(angle_difference(angle) * TURNING_MULTIPLIER), 100, stop = DEFAULT_STOP_TYPE, acceleration=acceleration, deceleration=deceleration)
+    await mp.move_for_degrees(DRIVE_PAIR, int(angle_difference(angle) * TURN_FACTOR), 100, stop = DEFAULT_STOP_TYPE, velocity=turn_velocity, acceleration=acceleration, deceleration=deceleration)
 
     await print_status("post-turn")
 
     # Start driving, continuously correcting in a loop. Break out when we reach our distance.
     reset_relative_drive_distance()
-    while remaining_degrees_drive() > 0:
-        mp.move(DRIVE_PAIR, steering(angle) * direction, velocity=velocity, acceleration=acceleration)
-    mp.stop(DRIVE_PAIR, stop=DEFAULT_STOP_TYPE)
+    try:
+        while remaining_degrees_drive() > 0:
+            mp.move(DRIVE_PAIR, steering(angle) * direction, velocity=velocity, acceleration=acceleration)
+            await runloop.sleep_ms(20)
+    finally:
+        mp.stop(DRIVE_PAIR, stop=DEFAULT_STOP_TYPE)
 
     await print_status("finish")
 
