@@ -1,4 +1,16 @@
 # LEGO slot:19 autostart
+# Copyright (c) 2026 Patrick W. Healy <phealy@phealy.com>
+# SPDX-License-Identifier: MIT
+
+'''
+turn_factor.py (Calculate turn factor)
+--------------------------------------
+Calculates the proper turning factor for a given SPIKE Prime robot. This is
+related to the ratio between the distance between the wheels and the diameter
+of the wheel. This code experimentally determines it by running 25 turns and
+using a moving average function to get the observed turn as close as possible
+to the desired turn.
+'''
 
 import runloop
 import motor_pair as mp, motor as m
@@ -8,14 +20,13 @@ dp = mp.PAIR_1
 mp.pair(dp, p.A, p.B)
 
 def normalize_angle(delta):
+    '''Returns a given angle, scaled to -180 to 180.'''
     return ((delta + 180) % 360) - 180
 
 async def yaw_angle():
+    '''Retrieves the angle from the yaw sensor as a float with the proper sign.'''
     await runloop.until(ms.stable)
     return ms.tilt_angles()[0] * -0.1
-
-def yaw_delta(angle):
-    return (((angle - (ms.tilt_angles()[0] * -0.1)) + 180) % 360) - 180
 
 def clip(value, low, high):
     return max(low, min(value, high))
