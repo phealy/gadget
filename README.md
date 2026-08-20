@@ -14,7 +14,7 @@ This code depends on the [lego-spikeprime-mindstorms-vscode extension](https://g
 > [!IMPORTANT]
 > Do not use the version from the VS Code Marketplace - I have forked the extension and improved it. I have PRs open to merge changes back in but haven't received a response yet, so the link goes to my fork.
 
-Download the VSIX file[from the latest release](https://github.com/phealy/lego-spikeprime-mindstorms-vscode/releases/latest/) and [install it into Visual Studio Code](https://code.visualstudio.com/docs/configure/extensions/extension-marketplace#_install-from-a-vsix).
+Download the VSIX file [from the latest release](https://github.com/phealy/lego-spikeprime-mindstorms-vscode/releases/latest/) and [install it into Visual Studio Code](https://code.visualstudio.com/docs/configure/extensions/extension-marketplace#_install-from-a-vsix).
 
 
 ## Attribution
