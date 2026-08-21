@@ -2,6 +2,7 @@
 # Copyright (c) 2026 Patrick W. Healy <phealy@phealy.com>
 # SPDX-License-Identifier: MIT
 
+from gadget import *
 from hub import port
 from color_sensor import color
 from color import BLACK, WHITE, GREEN
@@ -13,10 +14,10 @@ async def main():
     # await gyro_move(angle=90, long_turn=True, description='face east')
     # await gyro_move(angle=0, description='face north')
     #await gyro_move(drive_until=[GREEN, WHITE, BLACK], drive_velocity=200, description='driveblack')
-    await gyro_move(angle=-85)
-    await gyro_move(angle=20, turn_until=[WHITE, BLACK], turn_velocity=100)
-    await gyro_move(angle=0)
-    log("completed")
+    # await gyro_move(angle=-85)
+    # await gyro_move(angle=20, turn_until=[WHITE, BLACK], turn_velocity=100)
+    # await gyro_move(angle=0)
+    # await drive(10, -90, long_turn=True)
+    await drive_until(GREEN, WHITE, BLACK, angle=-90, long_turn=False, velocity=100)
 
-from gadget import *
 runloop.run(main())
