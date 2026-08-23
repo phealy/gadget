@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gadget Module Reference</title>
+  <style>
+    :root {
+      --ink: #172126;
+      --muted: #526168;
+      --line: #b8c5c9;
+      --paper: #ffffff;
+      --accent: #087f8c;
+      --accent-dark: #075864;
+      --accent-soft: #e7f5f6;
+      --code: #f1f5f5;
+    }
+
+    * { box-sizing: border-box; }
+
+    @page {
+      size: letter landscape;
+      margin: 0.35in;
+    }
+
+    html {
+      background: #d7dcdd;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      letter-spacing: 0;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    .page {
+      width: 11in;
+      height: 8.5in;
+      margin: 0.28in auto;
+      padding: 0.35in;
+      background: var(--paper);
+      box-shadow: 0 2px 14px rgb(22 33 38 / 18%);
+      break-after: page;
+      page-break-after: always;
+      overflow: hidden;
+    }
+
+    .page:last-child {
+      break-after: auto;
+      page-break-after: auto;
+    }
+
+    .masthead {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      height: 0.35in;
+      margin-bottom: 0.1in;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 0.04in;
+      color: var(--accent-dark);
+      font-family: "Trebuchet MS", Verdana, sans-serif;
+      font-size: 20pt;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .side-label {
+      color: var(--muted);
+      font-family: "Trebuchet MS", Verdana, sans-serif;
+      font-size: 8pt;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.24in;
+      height: 7.27in;
+    }
+
+    .column {
+      min-width: 0;
+    }
+
+    .column + .column {
+      padding-left: 0.24in;
+      border-left: 1px solid var(--line);
+    }
+
+    h2 {
+      margin-bottom: 0.08in;
+      color: var(--accent-dark);
+      font-family: "Trebuchet MS", Verdana, sans-serif;
+      font-size: 13pt;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0.1in 0 0.04in;
+      color: var(--accent-dark);
+      font-family: "Trebuchet MS", Verdana, sans-serif;
+      font-size: 10pt;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    p, li, td, th {
+      font-size: 7.8pt;
+      line-height: 1.22;
+    }
+
+    p { margin-bottom: 0.06in; }
+
+    code, pre {
+      font-family: Consolas, "Courier New", monospace;
+      letter-spacing: 0;
+    }
+
+    code {
+      color: #0c5660;
+      font-size: 0.96em;
+    }
+
+    pre {
+      margin: 0;
+      padding: 0.1in;
+      overflow: hidden;
+      border: 1px solid #ced8da;
+      border-left: 3px solid var(--accent);
+      background: var(--code);
+      color: #132125;
+      font-size: 6.7pt;
+      line-height: 1.27;
+      white-space: pre-wrap;
+      tab-size: 4;
+    }
+
+    .call code {
+      white-space: pre;
+    }
+
+    .constructor-code {
+      margin-bottom: 0.08in;
+      font-size: 6.4pt;
+      line-height: 1.18;
+    }
+
+    .call {
+      margin-bottom: 0.07in;
+      padding: 0.07in 0.08in;
+      border-left: 3px solid var(--accent);
+      background: var(--accent-soft);
+      color: #123c42;
+      font-size: 6.9pt;
+      line-height: 1.22;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th {
+      padding: 0.04in 0.05in;
+      background: var(--accent-dark);
+      color: white;
+      font-family: "Trebuchet MS", Verdana, sans-serif;
+      text-align: left;
+    }
+
+    td {
+      padding: 0.035in 0.05in;
+      border-bottom: 1px solid #d8e0e2;
+      vertical-align: top;
+    }
+
+    th:first-child, td:first-child {
+      width: 30%;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f4f7f7;
+    }
+
+    ul {
+      margin: 0.03in 0 0.08in;
+      padding-left: 0.18in;
+    }
+
+    li { margin-bottom: 0.025in; }
+
+    .method {
+      break-inside: avoid;
+      page-break-inside: avoid;
+      margin-bottom: 0.13in;
+    }
+
+    .method + .method {
+      padding-top: 0.12in;
+      border-top: 1px solid var(--line);
+    }
+
+    .note {
+      margin-top: 0.06in;
+      padding: 0.06in 0.08in;
+      border: 1px solid #9bc3c7;
+      background: var(--accent-soft);
+      font-size: 7.3pt;
+      line-height: 1.2;
+    }
+
+    .compact td, .compact th {
+      font-size: 8.8pt;
+      line-height: 1.16;
+    }
+
+    .footer {
+      margin-top: 0.06in;
+      color: var(--muted);
+      font-size: 6.6pt;
+      text-align: right;
+    }
+
+    .front pre {
+      font-size: 6.8pt;
+      line-height: 1.22;
+    }
+
+    .front .column:first-child pre {
+      font-size: 10pt;
+    }
+
+    .front .constructor-code {
+      font-size: 9pt;
+    }
+
+    .front th:first-child, .front td:first-child {
+      width: 31%;
+    }
+
+    .front .note {
+      margin-top: 0.045in;
+      padding: 0.045in 0.07in;
+      font-size: 8pt;
+    }
+
+    .back h2 {
+      margin-bottom: 0.05in;
+      font-size: 12pt;
+    }
+
+    .back h3 {
+      margin: 0.06in 0 0.025in;
+      font-size: 9.5pt;
+    }
+
+    .back p,
+    .back li {
+      font-size: 7.3pt;
+      line-height: 1.12;
+    }
+
+    .back p {
+      margin-bottom: 0.035in;
+    }
+
+    .back td,
+    .back th {
+      font-size: 8pt;
+      line-height: 1.12;
+      padding: 0.025in 0.04in;
+    }
+
+    .back .call {
+      margin-bottom: 0.03in;
+      padding: 0.025in 0.06in;
+      font-size: 9pt;
+      line-height: 1.15;
+    }
+
+    .back pre {
+      padding: 0.06in;
+      font-size: 7.8pt;
+      line-height: 1.16;
+    }
+
+    .back .method {
+      margin-bottom: 0.06in;
+    }
+
+    .back .method + .method {
+      padding-top: 0.06in;
+    }
+
+    .back .note {
+      margin-top: 0.04in;
+      padding: 0.04in 0.06in;
+      font-size: 7pt;
+      line-height: 1.1;
+    }
+
+    @media print {
+      html, body { background: white; }
+      .page {
+        width: auto;
+        min-height: 0;
+        height: 7.8in;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="page front" aria-label="Front side">
+    <header class="masthead">
+      <h1>Gadget Module</h1>
+      <span class="side-label">Quick reference · Front</span>
+    </header>
+
+    <main class="columns">
+      <section class="column" aria-labelledby="example-heading">
+        <h2 id="example-heading">Complete example</h2>
+        <pre><code># LEGO slot:0 autostart
+from gadget import *
+
+async def main():
+    robot = await Gadget.setup(
+        left_motor=port.A,
+        right_motor=port.B,
+        wheel_diameter="small",
+        turn_factor=1.447,
+        color_sensor=port.C,
+        distance_sensor=port.D,
+        force_sensor=port.F,
+    )
+
+    robot.log("Drive forward/backward at a heading.")
+    await robot.drive(distance=30, angle=0)
+    await robot.drive(distance=-10, angle=0)
+
+    robot.log("Turn to an absolute global heading.")
+    await robot.turn(angle=90)
+    await robot.turn(angle=0, long_turn=True)
+
+    robot.log("Use exactly one stop condition per call.")
+    await robot.drive_until(colors=[GREEN, WHITE], angle=-90)
+    await robot.drive_until(sensor_distance=15, angle=0)
+    await robot.drive_until(pressed=True)
+
+    robot.log("Turn right (default) or left for colors.")
+    await robot.turn_until(colors=[BLACK])
+    await robot.turn_until(colors=[WHITE], left_turn=True)
+
+    robot.log("completed")
+
+runloop.run(main())</code></pre>
+        <div class="note"><strong>Remember:</strong> Movement functions are asynchronous and require <code>await</code>.</div>
+      </section>
+
+      <section class="column" aria-labelledby="constructor-heading">
+        <h2 id="constructor-heading">Gadget.setup()</h2>
+          <pre class="constructor-code"><code>await Gadget.setup(<br>&nbsp;&nbsp;&nbsp;&nbsp;left_motor, right_motor,<br>&nbsp;&nbsp;&nbsp;&nbsp;wheel_diameter, turn_factor,<br>&nbsp;&nbsp;&nbsp;&nbsp;yaw_angle=0, yaw_face=motion_sensor.TOP,<br>&nbsp;&nbsp;&nbsp;&nbsp;default_drive_velocity=320, default_turn_velocity=200,<br>&nbsp;&nbsp;&nbsp;&nbsp;default_acceleration=1000, default_deceleration=1000,<br>&nbsp;&nbsp;&nbsp;&nbsp;default_stop_type=motor.SMART_BRAKE, steering_correction=1,<br>&nbsp;&nbsp;&nbsp;&nbsp;color_sensor=None, force_sensor=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;distance_sensor=None, drive_pair=motor_pair.PAIR_1,<br>)</code></pre>
+        <table class="compact" aria-label="setup parameters">
+          <thead>
+            <tr><th>Parameter</th><th>Purpose / accepted value</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>left_motor</code></td><td><strong>Required.</strong> Left drive motor port. Must differ from right.</td></tr>
+            <tr><td><code>right_motor</code></td><td><strong>Required.</strong> Right drive motor port. Must differ from left.</td></tr>
+            <tr><td><code>wheel_diameter</code></td><td><strong>Required.</strong> <code>"small"</code> (5.6 cm), <code>"large"</code> (8.8 cm), or a positive diameter in cm.</td></tr>
+            <tr><td><code>turn_factor</code></td><td><strong>Required.</strong> Positive yaw-to-motor multiplier calculated with <code>turn_factor.py</code>.</td></tr>
+            <tr><td><code>yaw_angle</code></td><td>Initial global heading, −180° to 180°. Default: <code>0</code>.</td></tr>
+            <tr><td><code>yaw_face</code></td><td>Hub face pointing up. Default: <code>motion_sensor.TOP</code>.</td></tr>
+            <tr><td><code>default_drive_velocity</code></td><td>Driving speed, 100–1050 °/s. Default: <code>320</code>.</td></tr>
+            <tr><td><code>default_turn_velocity</code></td><td>Turning speed, 100–1050 °/s. Default: <code>200</code>.</td></tr>
+            <tr><td><code>default_acceleration</code></td><td>Acceleration, 100–10000 °/s². Default: <code>1000</code>.</td></tr>
+            <tr><td><code>default_deceleration</code></td><td>Turn deceleration, 100–10000 °/s². Default: <code>1000</code>.</td></tr>
+            <tr><td><code>default_stop_type</code></td><td>Motor stop behavior. Default: <code>motor.SMART_BRAKE</code>.</td></tr>
+            <tr><td><code>steering_correction</code></td><td>Nonnegative gyro correction. Default: <code>1</code>.</td></tr>
+            <tr><td><code>color_sensor</code></td><td>Color sensor port. Default: <code>None</code>.</td></tr>
+            <tr><td><code>force_sensor</code></td><td>Force sensor port. Default: <code>None</code>.</td></tr>
+            <tr><td><code>distance_sensor</code></td><td>Distance sensor port. Default: <code>None</code>.</td></tr>
+            <tr><td><code>drive_pair</code></td><td>Motor-pair identifier. Default: <code>motor_pair.PAIR_1</code>.</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </section>
+
+  <section class="page back" aria-label="Back side">
+    <header class="masthead">
+      <h1>Movement Methods</h1>
+      <span class="side-label">Quick reference · Back</span>
+    </header>
+
+    <main class="columns">
+      <section class="column" aria-label="Driving methods">
+        <article class="method">
+          <h2>drive()</h2>
+            <div class="call"><code>await robot.drive(<br>&nbsp;&nbsp;&nbsp;&nbsp;distance, angle=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;long_turn=False, velocity=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;acceleration=None,<br>)</code></div>
+          <p>Drives a distance in centimeters while using yaw to hold a global heading. The robot first turns when it is more than 1° from the requested heading.</p>
+          <table aria-label="drive parameters">
+            <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>distance</code></td><td>Centimeters to drive. Negative backs up; <code>0</code> only turns.</td></tr>
+              <tr><td><code>angle</code></td><td>Heading, −180° to 180°. Current heading if omitted.</td></tr>
+              <tr><td><code>long_turn</code></td><td>Use the longer initial route to <code>angle</code>.</td></tr>
+              <tr><td><code>velocity</code></td><td>100–1050 °/s; otherwise the drive default.</td></tr>
+              <tr><td><code>acceleration</code></td><td>100–10000 °/s²; otherwise the default.</td></tr>
+            </tbody>
+          </table>
+          <h3>Examples</h3>
+          <pre><code>await robot.drive(distance=30, angle=0)
+await robot.drive(distance=-15, angle=90)</code></pre>
+        </article>
+
+        <article class="method">
+          <h2>drive_until()</h2>
+          <div class="call"><code>await robot.drive_until(<br>&nbsp;&nbsp;&nbsp;&nbsp;colors=None, sensor_distance=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;pressed=None, angle=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;reverse=False, long_turn=False,<br>&nbsp;&nbsp;&nbsp;&nbsp;velocity=None, acceleration=None,<br>)</code></div>
+          <p>Drives until <strong>exactly one</strong> sensor condition is met. Configure the matching sensor port in <code>Gadget.setup()</code>.</p>
+          <table class="compact" aria-label="drive_until parameters">
+            <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>colors</code></td><td>Ordered color list. Copied; caller's list is unchanged.</td></tr>
+              <tr><td><code>sensor_distance</code></td><td>Stop at or below this sensor distance, 5–100 cm.</td></tr>
+              <tr><td><code>pressed</code></td><td>Use <code>True</code> to stop when force sensor is pressed.</td></tr>
+              <tr><td><code>angle</code></td><td>Heading to hold; current heading if omitted.</td></tr>
+              <tr><td><code>reverse</code></td><td>Drive backward when <code>True</code>.</td></tr>
+              <tr><td><code>long_turn</code></td><td>Use longer initial route to the heading.</td></tr>
+              <tr><td><code>velocity</code></td><td>100–1050 °/s; otherwise drive default.</td></tr>
+              <tr><td><code>acceleration</code></td><td>100–10000 °/s²; otherwise default.</td></tr>
+            </tbody>
+          </table>
+          <h3>Examples</h3>
+          <pre><code>await robot.drive_until(colors=[GREEN, WHITE])
+await robot.drive_until(sensor_distance=15, angle=0)
+await robot.drive_until(pressed=True)</code></pre>
+        </article>
+      </section>
+
+      <section class="column" aria-label="Turning methods">
+        <article class="method">
+          <h2>turn()</h2>
+            <div class="call"><code>await robot.turn(<br>&nbsp;&nbsp;&nbsp;&nbsp;angle, long_turn=False,<br>&nbsp;&nbsp;&nbsp;&nbsp;velocity=None, acceleration=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;deceleration=None,<br>)</code></div>
+          <p>Tank-turns to an absolute global heading. By default, the robot takes the shortest route.</p>
+          <table aria-label="turn parameters">
+            <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>angle</code></td><td>Target global heading, −180° to 180°.</td></tr>
+              <tr><td><code>long_turn</code></td><td>Take the longer route when <code>True</code>.</td></tr>
+              <tr><td><code>velocity</code></td><td>100–1050 °/s; otherwise turn default.</td></tr>
+              <tr><td><code>acceleration</code></td><td>100–10000 °/s²; otherwise default.</td></tr>
+              <tr><td><code>deceleration</code></td><td>100–10000 °/s²; otherwise default.</td></tr>
+            </tbody>
+          </table>
+          <h3>Examples</h3>
+          <pre><code>await robot.turn(angle=90)
+await robot.turn(angle=-90, velocity=250)
+await robot.turn(angle=0, long_turn=True)</code></pre>
+        </article>
+
+        <article class="method">
+          <h2>turn_until()</h2>
+          <div class="call"><code>await robot.turn_until(<br>&nbsp;&nbsp;&nbsp;&nbsp;colors, left_turn=False,<br>&nbsp;&nbsp;&nbsp;&nbsp;velocity=None, acceleration=None,<br>)</code></div>
+          <p>Turns in place until the configured color sensor detects every color in the supplied order. The caller's list remains unchanged.</p>
+          <table aria-label="turn_until parameters">
+            <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>colors</code></td><td>Ordered list of colors to detect.</td></tr>
+              <tr><td><code>left_turn</code></td><td>Turn left when <code>True</code>; right by default.</td></tr>
+              <tr><td><code>velocity</code></td><td>100–1050 °/s; otherwise drive default.</td></tr>
+              <tr><td><code>acceleration</code></td><td>100–10000 °/s²; otherwise default.</td></tr>
+            </tbody>
+          </table>
+          <h3>Examples</h3>
+          <pre><code>await robot.turn_until(colors=[BLACK])
+await robot.turn_until(colors=[GREEN, WHITE], left_turn=True, velocity=200)</code></pre>
+          <div class="note"><strong>Color values:</strong> <code>BLACK</code>, <code>MAGENTA</code>, <code>PURPLE</code>, <code>BLUE</code>, <code>AZURE</code>, <code>TURQUOISE</code>, <code>GREEN</code>, <code>YELLOW</code>, <code>ORANGE</code>, <code>RED</code>, <code>WHITE</code>, <code>UNKNOWN</code>.</div>
+        </article>
+
+      </section>
+    </main>
+  </section>
+</body>
+</html>

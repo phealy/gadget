@@ -13,11 +13,11 @@ to the desired turn.
 '''
 
 import runloop
-import motor_pair as mp, motor as m
-from hub import port as p, motion_sensor as ms, light_matrix as lm
+import motor_pair, motor
+from hub import port, motion_sensor, light_matrix
 
-dp = mp.PAIR_1
-mp.pair(dp, p.A, p.B)
+dp = motor_pair.PAIR_1
+motor_pair.pair(dp, port.A, port.B)
 
 def normalize_angle(delta):
     '''Returns a given angle, scaled to -180 to 180.'''
@@ -25,29 +25,28 @@ def normalize_angle(delta):
 
 async def yaw_angle():
     '''Retrieves the angle from the yaw sensor as a float with the proper sign.'''
-    await runloop.until(ms.stable)
-    return ms.tilt_angles()[0] * -0.1
+    await runloop.until(motion_sensor.stable)
+    return motion_sensor.tilt_angles()[0] * -0.1
 
 def clip(value, low, high):
     return max(low, min(value, high))
 
 async def run_system(degrees):
-    await mp.move_for_degrees(mp.PAIR_1, int(degrees), 100, velocity=400, acceleration=200, deceleration=400, stop=m.SMART_BRAKE)
+    await motor_pair.move_for_degrees(motor_pair.PAIR_1, int(degrees), 100, velocity=400, acceleration=200, deceleration=400, stop=motor.SMART_BRAKE)
     await runloop.sleep_ms(120)
     return await yaw_angle()
 
 async def averaged_yaw(samples=7, delay_ms=40):
     total = 0
     for _ in range(samples):
-        await runloop.until(ms.stable)
-        total += ms.tilt_angles()[0] * -0.1
+        await runloop.until(motion_sensor.stable)
+        total += motion_sensor.tilt_angles()[0] * -0.1
         await runloop.sleep_ms(delay_ms)
     return total / samples
 
 async def main():
-
-    ms.reset_yaw(0)
-    lm.clear()
+    motion_sensor.reset_yaw(0)
+    light_matrix.clear()
 
     targets = [90, 180, -90, 0]
 
@@ -115,10 +114,10 @@ async def main():
             "f={:>10.4f}".format(f)
         )
 
-        lm.set_pixel(step % 5, step // 5, 100)
+        light_matrix.set_pixel(step % 5, step // 5, 100)
 
     final_f = sum(f_values[-5:]) / 5
     print("final f={:.4f}".format(final_f))
-    await lm.write("f={:.4f}".format(final_f))
+    await light_matrix.write("f={:.4f}".format(final_f))
 
 runloop.run(main())
