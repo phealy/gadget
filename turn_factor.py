@@ -32,7 +32,7 @@ def clip(value, low, high):
     return max(low, min(value, high))
 
 async def run_system(degrees):
-    await mp.move_for_degrees(mp.PAIR_1, int(degrees), 100, velocity=400, acceleration=100, deceleration=400, stop=m.SMART_BRAKE)
+    await mp.move_for_degrees(mp.PAIR_1, int(degrees), 100, velocity=400, acceleration=200, deceleration=400, stop=m.SMART_BRAKE)
     await runloop.sleep_ms(120)
     return await yaw_angle()
 
