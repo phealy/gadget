@@ -17,7 +17,7 @@ import motor_pair, motor
 from hub import port, motion_sensor, light_matrix
 
 dp = motor_pair.PAIR_1
-motor_pair.pair(dp, port.A, port.B)
+motor_pair.pair(dp, port.F, port.B)
 
 def normalize_angle(delta):
     '''Returns a given angle, scaled to -180 to 180.'''

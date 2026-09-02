@@ -19,9 +19,6 @@ async def main():
         right_motor=port.B,
         wheel_diameter="small",
         turn_factor=1.447,
-        color_sensor=port.C,
-        distance_sensor=port.D,
-        force_sensor=port.F,
     )
 
     await robot.drive(distance=-20, angle=0)
@@ -67,7 +64,7 @@ await Gadget.setup(
 )
 ```
 
-Creates the controller, pairs its drive motors, waits for the motion sensor to stabilize, configures its yaw face, resets yaw to `yaw_angle`, and returns the controller.
+Creates the controller, pairs its drive motors, automatically detects connected color, force, and distance sensors whose ports are not supplied, waits for the motion sensor to stabilize, configures its yaw face, resets yaw to `yaw_angle`, and returns the controller.
 
 | Parameter | Description |
 | --- | --- |
@@ -83,9 +80,9 @@ Creates the controller, pairs its drive motors, waits for the motion sensor to s
 | `default_deceleration` | Turn deceleration. Default: `1000`. |
 | `default_stop_type` | Motor stop behavior. Default: `motor.SMART_BRAKE`. |
 | `steering_correction` | Nonnegative gyro correction multiplier. Default: `1`. |
-| `color_sensor` | Color-sensor port required for color-based movement. Default: `None`. |
-| `force_sensor` | Force-sensor port required for press-based movement. Default: `None`. |
-| `distance_sensor` | Distance-sensor port required for distance-based movement. Default: `None`. |
+| `color_sensor` | Color-sensor port. Automatically detected when omitted. |
+| `force_sensor` | Force-sensor port. Automatically detected when omitted. |
+| `distance_sensor` | Distance-sensor port. Automatically detected when omitted. |
 | `drive_pair` | Motor-pair identifier. Default: `motor_pair.PAIR_1`. |
 
 ## `log()`
@@ -109,6 +106,60 @@ heading = robot.yaw_angle()
 ```
 
 Returns the current yaw heading as a `float` in degrees. The result uses the module's sign convention, where values increase to the right. This is a static method and does not require an instance.
+
+## `setup_attachment()`
+
+```python
+await robot.setup_attachment(
+    position,
+    port,
+    angle=0,
+    gear_ratio=1,
+    velocity=320,
+    acceleration=800,
+)
+```
+
+Registers an attachment motor and resets its relative position to the supplied logical angle. Call this once for each attachment before using `move_attachment()`. The logical angle is multiplied by `gear_ratio` when controlling the motor.
+
+| Parameter | Description |
+| --- | --- |
+| `position` | **Required.** Attachment name, normally `"front"` or `"rear"`. Use the same name with `move_attachment()`. |
+| `port` | **Required.** Port containing the attachment motor. |
+| `angle` | Initial logical angle in degrees. Default: `0`. |
+| `gear_ratio` | Motor rotation per degree of attachment rotation. Default: `1`. |
+| `velocity` | Default attachment velocity from `100` through `1050` degrees per second. Default: `320`. |
+| `acceleration` | Default attachment acceleration from `100` through `10000` degrees per second squared. Default: `800`. |
+
+```python
+await robot.setup_attachment("front", port.C, -90, velocity=400)
+await robot.setup_attachment("rear", port.A, 90, gear_ratio=24)
+```
+
+## `move_attachment()`
+
+```python
+await robot.move_attachment(
+    position,
+    angle,
+    velocity=None,
+    acceleration=None,
+)
+```
+
+Moves a registered attachment to an absolute logical angle relative to the position established by `setup_attachment()`. The coroutine completes when the motor reaches its target.
+
+| Parameter | Description |
+| --- | --- |
+| `position` | **Required.** Attachment name previously passed to `setup_attachment()`. |
+| `angle` | **Required.** Target logical angle in degrees. |
+| `velocity` | Velocity for this movement, or the attachment default when omitted. |
+| `acceleration` | Acceleration for this movement, or the attachment default when omitted. |
+
+```python
+await robot.move_attachment(position="front", angle=0)
+await robot.move_attachment(position="front", angle=-90, velocity=250)
+```
 
 ## `drive()`
 
@@ -183,9 +234,9 @@ Drives at a heading until exactly one configured sensor condition is met. Supply
 
 | Parameter | Description |
 | --- | --- |
-| `colors` | Ordered list of colors to detect. Requires `color_sensor` in `Gadget.setup()`. |
-| `sensor_distance` | Stop when the distance sensor reads this value or less, in centimeters. Requires `distance_sensor` in `Gadget.setup()`. |
-| `pressed` | Supply a non-`None` value to stop when the force sensor is pressed. Requires `force_sensor` in `Gadget.setup()`. |
+| `colors` | Ordered list of colors to detect. Requires a connected color sensor. |
+| `sensor_distance` | Stop when the distance sensor reads this value or less, in centimeters. Requires a connected distance sensor. |
+| `pressed` | Supply a non-`None` value to stop when the force sensor is pressed. Requires a connected force sensor. |
 | `angle` | Global heading to maintain. Defaults to the current heading. |
 | `reverse` | Drive backward when `True`. |
 | `long_turn` | Use the longer route when initially turning to `angle`. |
@@ -211,7 +262,7 @@ await robot.turn_until(
 )
 ```
 
-Turns in place until the color sensor detects every color in the supplied order. A color sensor must be configured in `Gadget.setup()`.
+Turns in place until the color sensor detects every color in the supplied order. A color sensor must be connected.
 
 | Parameter | Description |
 | --- | --- |
@@ -236,9 +287,6 @@ robot = await Gadget.setup(
     right_motor=port.B,
     wheel_diameter="small",
     turn_factor=1.447,
-    color_sensor=port.C,
-    distance_sensor=port.D,
-    force_sensor=port.F,
 )
 
 await robot.drive_until(colors=[GREEN, WHITE, BLACK])
@@ -246,4 +294,4 @@ await robot.drive_until(sensor_distance=15)
 await robot.drive_until(pressed=True)
 ```
 
-Only initialize ports for sensors physically connected to the hub. Calling a sensor-dependent method without its corresponding port raises an assertion error.
+`Gadget.setup()` automatically detects connected color, distance, and force sensors when their ports are omitted. Supply a sensor port only to select it explicitly. Calling a sensor-dependent method when the corresponding sensor was not detected or supplied raises an assertion error.

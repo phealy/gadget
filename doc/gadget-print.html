@@ -309,6 +309,37 @@
       line-height: 1.1;
     }
 
+    .attachments h2 {
+      font-size: 16pt;
+    }
+
+    .attachments h3 {
+      font-size: 12pt;
+    }
+
+    .attachments p,
+    .attachments li,
+    .attachments td,
+    .attachments th {
+      font-size: 10pt;
+      line-height: 1.24;
+    }
+
+    .attachments .call {
+      font-size: 9.5pt;
+      line-height: 1.25;
+    }
+
+    .attachments pre {
+      font-size: 9pt;
+      line-height: 1.3;
+    }
+
+    .attachments .note {
+      font-size: 9pt;
+      line-height: 1.22;
+    }
+
     @media print {
       html, body { background: white; }
       .page {
@@ -341,9 +372,6 @@ async def main():
         right_motor=port.B,
         wheel_diameter="small",
         turn_factor=1.447,
-        color_sensor=port.C,
-        distance_sensor=port.D,
-        force_sensor=port.F,
     )
 
     robot.log("Drive forward/backward at a heading.")
@@ -389,9 +417,9 @@ runloop.run(main())</code></pre>
             <tr><td><code>default_deceleration</code></td><td>Turn deceleration, 100–10000 °/s². Default: <code>1000</code>.</td></tr>
             <tr><td><code>default_stop_type</code></td><td>Motor stop behavior. Default: <code>motor.SMART_BRAKE</code>.</td></tr>
             <tr><td><code>steering_correction</code></td><td>Nonnegative gyro correction. Default: <code>1</code>.</td></tr>
-            <tr><td><code>color_sensor</code></td><td>Color sensor port. Default: <code>None</code>.</td></tr>
-            <tr><td><code>force_sensor</code></td><td>Force sensor port. Default: <code>None</code>.</td></tr>
-            <tr><td><code>distance_sensor</code></td><td>Distance sensor port. Default: <code>None</code>.</td></tr>
+            <tr><td><code>color_sensor</code></td><td>Color sensor port. Auto-detected when omitted.</td></tr>
+            <tr><td><code>force_sensor</code></td><td>Force sensor port. Auto-detected when omitted.</td></tr>
+            <tr><td><code>distance_sensor</code></td><td>Distance sensor port. Auto-detected when omitted.</td></tr>
             <tr><td><code>drive_pair</code></td><td>Motor-pair identifier. Default: <code>motor_pair.PAIR_1</code>.</td></tr>
           </tbody>
         </table>
@@ -429,7 +457,7 @@ await robot.drive(distance=-15, angle=90)</code></pre>
         <article class="method">
           <h2>drive_until()</h2>
           <div class="call"><code>await robot.drive_until(<br>&nbsp;&nbsp;&nbsp;&nbsp;colors=None, sensor_distance=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;pressed=None, angle=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;reverse=False, long_turn=False,<br>&nbsp;&nbsp;&nbsp;&nbsp;velocity=None, acceleration=None,<br>)</code></div>
-          <p>Drives until <strong>exactly one</strong> sensor condition is met. Configure the matching sensor port in <code>Gadget.setup()</code>.</p>
+          <p>Drives until <strong>exactly one</strong> sensor condition is met. Sensor ports are auto-detected when omitted from <code>Gadget.setup()</code>.</p>
           <table class="compact" aria-label="drive_until parameters">
             <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
             <tbody>
@@ -490,6 +518,74 @@ await robot.turn_until(colors=[GREEN, WHITE], left_turn=True, velocity=200)</cod
           <div class="note"><strong>Color values:</strong> <code>BLACK</code>, <code>MAGENTA</code>, <code>PURPLE</code>, <code>BLUE</code>, <code>AZURE</code>, <code>TURQUOISE</code>, <code>GREEN</code>, <code>YELLOW</code>, <code>ORANGE</code>, <code>RED</code>, <code>WHITE</code>, <code>UNKNOWN</code>.</div>
         </article>
 
+      </section>
+    </main>
+  </section>
+
+  <section class="page attachments" aria-label="Attachment motors">
+    <header class="masthead">
+      <h1>Attachment Motors</h1>
+      <span class="side-label">Quick reference · Page 3</span>
+    </header>
+
+    <main class="columns">
+      <section class="column" aria-labelledby="setup-attachment-heading">
+        <article class="method">
+          <h2 id="setup-attachment-heading">setup_attachment()</h2>
+          <div class="call"><code>await robot.setup_attachment(<br>&nbsp;&nbsp;&nbsp;&nbsp;position, port, angle=0,<br>&nbsp;&nbsp;&nbsp;&nbsp;gear_ratio=1, velocity=320,<br>&nbsp;&nbsp;&nbsp;&nbsp;acceleration=800,<br>)</code></div>
+          <p>Registers an attachment motor and resets its relative position to the supplied logical angle. Call it once for each attachment before moving that attachment.</p>
+          <table aria-label="setup_attachment parameters">
+            <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>position</code></td><td><strong>Required.</strong> Attachment name, normally <code>"front"</code> or <code>"rear"</code>.</td></tr>
+              <tr><td><code>port</code></td><td><strong>Required.</strong> Attachment motor port.</td></tr>
+              <tr><td><code>angle</code></td><td>Initial logical angle in degrees. Default: <code>0</code>.</td></tr>
+              <tr><td><code>gear_ratio</code></td><td>Motor rotation per degree of attachment rotation. Default: <code>1</code>.</td></tr>
+              <tr><td><code>velocity</code></td><td>Default speed, 100–1050 °/s. Default: <code>320</code>.</td></tr>
+              <tr><td><code>acceleration</code></td><td>Default acceleration, 100–10000 °/s². Default: <code>800</code>.</td></tr>
+            </tbody>
+          </table>
+          <div class="note"><strong>Gearing:</strong> Gadget multiplies logical angles by <code>gear_ratio</code> for both setup and movement. For a 24:1 reduction, a 1° attachment movement commands 24° of motor rotation.</div>
+        </article>
+      </section>
+
+      <section class="column" aria-labelledby="move-attachment-heading">
+        <article class="method">
+          <h2 id="move-attachment-heading">move_attachment()</h2>
+          <div class="call"><code>await robot.move_attachment(<br>&nbsp;&nbsp;&nbsp;&nbsp;position, angle,<br>&nbsp;&nbsp;&nbsp;&nbsp;velocity=None, acceleration=None,<br>)</code></div>
+          <p>Moves a registered attachment to an absolute logical angle relative to the position established by <code>setup_attachment()</code>. It waits for the motor to reach the target.</p>
+          <table aria-label="move_attachment parameters">
+            <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>position</code></td><td><strong>Required.</strong> Name previously passed to <code>setup_attachment()</code>.</td></tr>
+              <tr><td><code>angle</code></td><td><strong>Required.</strong> Target logical angle in degrees.</td></tr>
+              <tr><td><code>velocity</code></td><td>Speed for this movement, or the attachment default.</td></tr>
+              <tr><td><code>acceleration</code></td><td>Acceleration for this movement, or the attachment default.</td></tr>
+            </tbody>
+          </table>
+          <h3>Complete example</h3>
+          <pre><code>robot = await Gadget.setup(
+    left_motor=port.F,
+    right_motor=port.E,
+    wheel_diameter="small",
+    turn_factor=1.447,
+)
+
+await robot.setup_attachment(
+    "front", port.C, -90,
+    velocity=400, acceleration=800,
+)
+await robot.setup_attachment(
+    "rear", port.A, 90,
+    gear_ratio=24, velocity=1000,
+    acceleration=10000,
+)
+
+await robot.move_attachment("front", 0)
+await robot.move_attachment("front", -90)
+await robot.move_attachment("rear", -45)
+await robot.move_attachment("rear", 90)</code></pre>
+        </article>
       </section>
     </main>
   </section>
